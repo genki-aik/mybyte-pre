@@ -408,7 +408,13 @@ export default function register() {
                             <Controller
                                 control={control}
                                 name="participated"
-                                rules={{ required: "Please select an option" }}
+                                rules={{ validate: (value) => {
+                                    if (value == null) {
+                                        return "Please select an option"
+                                    }
+
+                                    return true
+                                }}}
                                 render={({ field: { onChange, value } }) => (
                                     <>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>have you participated in a hackathon before?<span className="text-red-600">*</span></label>
