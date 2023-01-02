@@ -6,6 +6,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@hookform/error-message": "^2.0.1",
     "@material-tailwind/react": "^1.2.4",
     "firebase": "^9.14.0",
     "jquery": "^3.6.3",

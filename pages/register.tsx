@@ -4,6 +4,7 @@ import Select from 'react-select';
 import countryList from 'react-select-country-list';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import Link from 'next/link';
+import { ErrorMessage } from '@hookform/error-message';
 
 import "react-phone-number-input/style.css";
 
@@ -87,16 +88,17 @@ interface RegisterForm {
 export default function register() {
   const { control, resetField, watch, register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     defaultValues: {
-        countryResidence: {value: "", label: ""},
         phoneNumber: "",
         inputMajor: "",
     }
   });
   const onSubmit: SubmitHandler<RegisterForm> = data => console.log(data);
-  const watchers = watch(["major", "school", "participated"]); // you can also target specific fields by their names
+  console.log(watch(["major", "school", "participated", "countryResidence"])); // you can also target specific fields by their names
   //const debug = watch();
   const [value, setValue] = useState('')
   const options = useMemo(() => countryList().getData(), [])
+  //const countryOptions = countryList().getData()
+  console.log(countryList().getData())
   const schoolOptions = [
     {value: "uga", label: "University of Georgia"},
     {value: "gt", label: "Georgia Tech"},
@@ -106,6 +108,7 @@ export default function register() {
     {value: "stanford", label: "Stanford University"},
     {value: "other", label: "Other"},
   ]
+  console.log(schoolOptions)
   const [otherMajor, setOtherMajor] = useState(false)
   const [otherSchool, setOtherSchool] = useState(false)
 
@@ -140,7 +143,6 @@ export default function register() {
   const changeHandler = (value: React.SetStateAction<string>) => {
     setValue(value)
     console.log(value)
-    console.log(options)
   }
 
   return (
@@ -235,16 +237,17 @@ export default function register() {
                                 {/* <div className="flex-shrink w-full inline-block relative"> */}
                                     <Controller
                                         name="countryResidence"
-                                        rules={{required: "Please select a country"}}
+                                        rules={{required: "Please select a country of residence"}}
                                         render={({ field: { name, onChange, value } }) => (
-                                            <Select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" placeholder={<div>SDFSDF</div>} options={options} value={value} onChange={onChange} name={name} />
-                                        )}
+                                            <Select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" options={options} value={value} onChange={onChange} name={name} />
+                                            )}
                                         control={control}
                                     />
                                     {/* <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div> */}
                                 {/* </div> */}
+                                {errors.countryResidence && <p className="text-red-400">{errors.countryResidence.message}</p>}
                             </div>
                             <div className='w-full md:w-1/2 px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >phone Number<span className="text-red-600">*</span></label>
@@ -254,7 +257,8 @@ export default function register() {
                                         name="phoneNumber"
                                         control={control}
                                         rules={{
-                                            validate: (value) => isValidPhoneNumber(value)
+                                            validate: (value) => isValidPhoneNumber(value) || "Invalid phone number",
+                                            required: "Please enter your phone number"
                                         }}
                                         render={({ field: { onChange, value } }) => (
                                             <PhoneInput
@@ -265,9 +269,23 @@ export default function register() {
                                             />
                                         )}
                                     />
-                                    {errors["phoneNumber"] && (
+                                    {/* {errors["phoneNumber"] && (
                                         <p className="error-message">Invalid Phone</p>
-                                    )}
+                                    )} */}
+                                    {errors.phoneNumber ? (
+                                        <>
+                                        {errors.phoneNumber.type === "required" && (
+                                            <p className="text-red-500">
+                                            {errors.phoneNumber.message}
+                                            </p>
+                                        )}
+                                        {errors.phoneNumber.type === "validate" && (
+                                            <p className="text-red-500">
+                                            {errors.phoneNumber.message}
+                                            </p>
+                                        )}
+                                        </>
+                                    ) : null}
                                 </div>
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
@@ -283,19 +301,22 @@ export default function register() {
                                         <option value="masters">{YearEnum.masters}</option>
                                         <option value="other">{YearEnum.other}</option>
                                     </select> */}
-                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("year")} >
+                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("year", {required: "Please select a year"})} >
+                                        <option value="">Select your year</option>
                                         {Object.keys(YearEnum).map(key =>
                                             <option key={key} value={key}>{YearEnum[key as keyof typeof YearEnum]}</option>)}
                                     </select>
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div>
+                                    {errors.year && <p className="text-red-400">{errors.year.message}</p>}
                                 </div>
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>current major<span className="text-red-600">*</span></label>
                                 <div className="flex-shrink w-full inline-block relative">
-                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("major")} >
+                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("major", {required: "Please select a major"})} >
+                                        <option value="">Select your major</option>
                                         {Object.keys(MajorEnum).map(key =>
                                             <option key={key} value={key}>{MajorEnum[key as keyof typeof MajorEnum]}</option>)}
                                     </select>
@@ -303,17 +324,20 @@ export default function register() {
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div>
+                                    {errors.major && <p className="text-red-400">{errors.major.message}</p>}
                                 </div>
                             </div>
                             <div className='w-full md:w-1/2 px-3 mb-6'>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >minor</label>
-                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("lastName")} type='text' />
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("minor", {maxLength: 100, pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' />
+                                    {errors.minor && <p className="text-red-400">{errors.minor.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>select your school<span className="text-red-600">*</span></label>
                                 {/* <div className="flex-shrink w-full inline-block relative"> */}
                                     <Controller
                                         name="school"
+                                        rules={{ required: "Please select your school" }}
                                         render={({ field: { name, onChange, value } }) => (
                                             <Select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" options={schoolOptions} value={value} onChange={onChange} name={name} />
                                         )}
@@ -324,6 +348,7 @@ export default function register() {
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div> */}
                                 {/* </div> */}
+                                {errors.school && <p className="text-red-400">{errors.school.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                             <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>enter school email address (.edu)<span className="text-red-600">*</span></label>
@@ -361,33 +386,38 @@ export default function register() {
                             <Controller
                                 control={control}
                                 name="participated"
+                                rules={{ required: "Please select an option" }}
                                 render={({ field: { onChange, value } }) => (
                                     <>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>have you participated in a hackathon before?<span className="text-red-600">*</span></label>
-                                    <label>Yes<input className="mr-10" id='grid-text-1' type='radio' onChange={() => onChange(true)} checked={value === true} /></label>
-                                    <label>No<input id='grid-text-1' type='radio' onChange={() => onChange(false)} checked={value === false} /></label>
+                                    <label>Yes <input className="mr-10" id='grid-text-1' type='radio' onChange={() => onChange(true)} checked={value === true} /></label>
+                                    <label>No <input id='grid-text-1' type='radio' onChange={() => onChange(false)} checked={value === false} /></label>
                                     </>
                                 )}
                             />
+                            {errors.participated && <p className="text-red-400">{errors.participated.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >what do you hope to see from UGA Hacks 8?<span className="text-red-600">*</span></label>
-                                <textarea className='bg-gray-100 rounded-md border leading-normal resize-none w-full h-20 py-2 px-3 shadow-inner border border-gray-400 font-medium placeholder-gray-700 focus:outline-none focus:bg-white' {...register("hopeToSee")} ></textarea>
+                                <textarea className='bg-gray-100 rounded-md border leading-normal resize-none w-full h-20 py-2 px-3 shadow-inner border border-gray-400 font-medium placeholder-gray-700 focus:outline-none focus:bg-white' {...register("hopeToSee", {required: "Please enter a response"})} ></textarea>
+                                {errors.hopeToSee && <p className="text-red-400">{errors.hopeToSee.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                             <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>dietary restrictions:</label>
-                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("dietaryRestrictions")} id='grid-text-1' type='text' placeholder='Enter dietary restrictions' />
+                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("dietaryRestrictions", {maxLength: 100})} id='grid-text-1' type='text' placeholder='Enter dietary restrictions' />
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>Shirt size<span className="text-red-600">*</span></label>
                                 <div className="flex-shrink w-full inline-block relative">
-                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("shirtSize")} >
+                                    <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("shirtSize", {required: "PLease select a shirt size"})} >
+                                        <option value="">Select your shirt size</option>
                                         {Object.keys(SizeEnum).map(key =>
                                             <option key={key} value={key}>{SizeEnum[key as keyof typeof SizeEnum]}</option>)}
                                     </select>
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div>
+                                    {errors.shirtSize && <p className="text-red-400">{errors.shirtSize.message}</p>}
                                 </div>
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
@@ -395,6 +425,7 @@ export default function register() {
                                 <Controller
                                     control={control}
                                     name="codeOfConduct"
+                                    rules={{ required: "Please indicate you have read and agreed to the MLH code of conduct" }}
                                     render={({ field: { onChange, value } }) => (
                                         <>
                                         <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'><em>MLH Code of Conduct: </em>"I have read and agree to the <Link href="https://static.mlh.io/docs/mlh-code-of-conduct.pdf" target="_blank" className="text-blue-600">MLH Code of Conduct</Link>."<span className="text-red-600">*</span></label>
@@ -402,12 +433,14 @@ export default function register() {
                                         </>
                                     )}
                                 />
+                                {errors.codeOfConduct && <p className="text-red-400">{errors.codeOfConduct.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                             
                                 <Controller
                                     control={control}
                                     name="eventLogisticsInfo"
+                                    rules={{ required: "Please indicate you have read and agree to the MLH Privacy policy"}}
                                     render={({ field: { onChange, value } }) => (
                                         <>
                                         <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'><em>Event Logistics Information: </em>“I authorize you to share my application/registration information with Major League Hacking for event administration, ranking, and MLH administration in-line with the <Link href="https://mlh.io/privacy" target="_blank" className="text-blue-600">MLH Privacy Policy</Link>. I further agree to the terms of both the <Link href="https://github.com/MLH/mlh-policies/blob/main/contest-terms.md" target="_blank" className="text-blue-600">MLH Contest Terms and Conditions</Link> and the <Link href="https://mlh.io/privacy" target="_blank" className="text-blue-600">MLH Privacy Policy</Link>.”<span className="text-red-600">*</span></label>
@@ -415,12 +448,14 @@ export default function register() {
                                         </>
                                     )}
                                 />
+                                {errors.eventLogisticsInfo && <p className="text-red-400">{errors.eventLogisticsInfo.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                             
                                 <Controller
                                     control={control}
                                     name="mlhCommunication"
+                                    rules={{ required: "Please indicate you have read and agree to the MLH Privacy policy" }}
                                     render={({ field: { onChange, value } }) => (
                                         <>
                                         <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'><em>Communication from MLH: </em>“I authorize MLH to send me an email where I can further opt into the MLH Hacker, Events, or Organizer Newsletters and other communications from MLH."<span className="text-red-600">*</span></label>
@@ -428,6 +463,7 @@ export default function register() {
                                         </>
                                     )}
                                 />
+                                {errors.mlhCommunication && <p className="text-red-400">{errors.mlhCommunication.message}</p>}
                             </div>
                             <div className="flex justify-end">
                                 <button className="appearance-none bg-gray-200 text-gray-900 px-2 py-1 shadow-sm border border-gray-400 rounded-md mr-3" type="submit">Register!</button>
