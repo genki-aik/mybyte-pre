@@ -93,12 +93,12 @@ export default function register() {
     }
   });
   const onSubmit: SubmitHandler<RegisterForm> = data => console.log(data);
-  console.log(watch(["major", "school", "participated", "countryResidence"])); // you can also target specific fields by their names
+
+  const watchers = watch(["major", "school"]); // you can also target specific fields by their names
   //const debug = watch();
   const [value, setValue] = useState('')
   const options = useMemo(() => countryList().getData(), [])
   //const countryOptions = countryList().getData()
-  console.log(countryList().getData())
   const schoolOptions = [
     {value: "uga", label: "University of Georgia"},
     {value: "gt", label: "Georgia Tech"},
@@ -108,9 +108,9 @@ export default function register() {
     {value: "stanford", label: "Stanford University"},
     {value: "other", label: "Other"},
   ]
-  console.log(schoolOptions)
   const [otherMajor, setOtherMajor] = useState(false)
   const [otherSchool, setOtherSchool] = useState(false)
+  const [textCount, setTextCount] = useState(0)
 
   register("major", {
     onChange: (e) => otherMajorInput(e.target.value)
@@ -131,18 +131,12 @@ export default function register() {
   }
 
   function otherSchoolInput(value: string) {
-    console.log(value)
     if (value == "other") {
         setOtherSchool(true)
     } else {
         setOtherSchool(false)
         resetField("inputSchool")
     }
-  }
-  
-  const changeHandler = (value: React.SetStateAction<string>) => {
-    setValue(value)
-    console.log(value)
   }
 
   return (
@@ -183,7 +177,7 @@ export default function register() {
                             <div className="flex items-center justify-between mt-4">
                                 <div className='w-full md:w-1/2 px-3 mb-6'>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >first name<span className="text-red-600">*</span></label>
-                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("firstName", {required: "Please enter your first name", maxLength: 50, pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' />
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("firstName", {required: "Please enter your first name", pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={50} />
                                     {errors.firstName ? (
                                         <>
                                         {errors.firstName.type === "required" && (
@@ -201,7 +195,7 @@ export default function register() {
                                 </div>
                                 <div className='w-full md:w-1/2 px-3 mb-6'>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >last name<span className="text-red-600">*</span></label>
-                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("lastName", {required: "Please enter your last name", maxLength: 50, pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' />
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("lastName", {required: "Please enter your last name", pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={50} />
                                     {errors.lastName ? (
                                         <>
                                         {errors.lastName.type === "required" && (
@@ -250,7 +244,7 @@ export default function register() {
                                 {errors.countryResidence && <p className="text-red-400">{errors.countryResidence.message}</p>}
                             </div>
                             <div className='w-full md:w-1/2 px-3 mb-6'>
-                                <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >phone Number<span className="text-red-600">*</span></label>
+                                <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >phone number<span className="text-red-600">*</span></label>
                                 {/* <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("lastName")} type='text'  required /> */}
                                 <div className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500'>
                                     <Controller
@@ -289,7 +283,7 @@ export default function register() {
                                 </div>
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
-                                <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>current School Year<span className="text-red-600">*</span></label>
+                                <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>current school year<span className="text-red-600">*</span></label>
                                 <div className="flex-shrink w-full inline-block relative">
                                     {/* <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("year")} >
                                         <option value="freshman">{YearEnum.freshman}</option>
@@ -320,16 +314,30 @@ export default function register() {
                                         {Object.keys(MajorEnum).map(key =>
                                             <option key={key} value={key}>{MajorEnum[key as keyof typeof MajorEnum]}</option>)}
                                     </select>
-                                    {otherMajor ? <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("inputMajor")} type='text' /> : null}
+                                    {otherMajor ? <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("inputMajor", {required: "Please enter your major", pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={100} placeholder="Type your major here" /> : null}
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div>
                                     {errors.major && <p className="text-red-400">{errors.major.message}</p>}
+                                    {errors.inputMajor ? (
+                                        <>
+                                        {errors.inputMajor.type === "required" && (
+                                            <p className="text-red-500">
+                                            {errors.inputMajor.message}
+                                            </p>
+                                        )}
+                                        {errors.inputMajor.type === "pattern" && (
+                                            <p className="text-red-500">
+                                            {errors.inputMajor.message}
+                                            </p>
+                                        )}
+                                        </>
+                                    ) : null}
                                 </div>
                             </div>
                             <div className='w-full md:w-1/2 px-3 mb-6'>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >minor</label>
-                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("minor", {maxLength: 100, pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' />
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("minor", {pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={100} placeholder="Type your minor here" />
                                     {errors.minor && <p className="text-red-400">{errors.minor.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
@@ -343,16 +351,30 @@ export default function register() {
                                         )}
                                         control={control}
                                     />
-                                    {otherSchool ? <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("inputSchool")} type='text' /> : null}
+                                    {errors.school && <p className="text-red-400">{errors.school.message}</p>}
+                                    {otherSchool ? <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("inputSchool", {required: "Please enter your school", pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={100} placeholder="Type your school here" /> : null}
                                     {/* <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
                                     </div> */}
                                 {/* </div> */}
-                                {errors.school && <p className="text-red-400">{errors.school.message}</p>}
+                                    {errors.inputSchool ? (
+                                        <>
+                                        {errors.inputSchool.type === "required" && (
+                                            <p className="text-red-500">
+                                            {errors.inputSchool.message}
+                                            </p>
+                                        )}
+                                        {errors.inputSchool.type === "pattern" && (
+                                            <p className="text-red-500">
+                                            {errors.inputSchool.message}
+                                            </p>
+                                        )}
+                                        </>
+                                    ) : null}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                             <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>enter school email address (.edu)<span className="text-red-600">*</span></label>
-                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("email", {required: "Please enter your school email", pattern: {value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.edu)/, message: "Needs to be a valid school email"}})} id='grid-text-1' type='text' placeholder='Enter school email' />
+                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("email", {required: "Please enter your school email", pattern: {value: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.edu)/, message: "Needs to be a valid school email"}})} id='grid-text-1' type='text' placeholder='Enter school email' maxLength={100} />
                                 {/* {errors.email && <p className="text-red-400">{errors.email.message}</p>} */}
                                 {errors.email ? (
                                     <>
@@ -399,12 +421,13 @@ export default function register() {
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >what do you hope to see from UGA Hacks 8?<span className="text-red-600">*</span></label>
-                                <textarea className='bg-gray-100 rounded-md border leading-normal resize-none w-full h-20 py-2 px-3 shadow-inner border border-gray-400 font-medium placeholder-gray-700 focus:outline-none focus:bg-white' {...register("hopeToSee", {required: "Please enter a response"})} ></textarea>
+                                <textarea className='bg-gray-100 rounded-md border leading-normal resize-none w-full h-20 py-2 px-3 shadow-inner border border-gray-400 font-medium placeholder-gray-700 focus:outline-none focus:bg-white' {...register("hopeToSee", {required: "Please enter a response"})} maxLength={250} onChange={e => setTextCount(e.target.value.length)}></textarea>
+                                <p>{textCount}/250</p>
                                 {errors.hopeToSee && <p className="text-red-400">{errors.hopeToSee.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
-                            <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>dietary restrictions:</label>
-                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("dietaryRestrictions", {maxLength: 100})} id='grid-text-1' type='text' placeholder='Enter dietary restrictions' />
+                            <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'>dietary restrictions</label>
+                                <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("dietaryRestrictions")} id='grid-text-1' type='text' maxLength={100} placeholder='Enter dietary restrictions' />
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>Shirt size<span className="text-red-600">*</span></label>
@@ -455,7 +478,7 @@ export default function register() {
                                 <Controller
                                     control={control}
                                     name="mlhCommunication"
-                                    rules={{ required: "Please indicate you have read and agree to the MLH Privacy policy" }}
+                                    rules={{ required: "You must select Yes before proceeding" }}
                                     render={({ field: { onChange, value } }) => (
                                         <>
                                         <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' htmlFor='grid-text-1'><em>Communication from MLH: </em>“I authorize MLH to send me an email where I can further opt into the MLH Hacker, Events, or Organizer Newsletters and other communications from MLH."<span className="text-red-600">*</span></label>
