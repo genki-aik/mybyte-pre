@@ -6,84 +6,87 @@ import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import Link from 'next/link';
 import { ErrorMessage } from '@hookform/error-message';
 
+import { RegisterForm } from '../interfaces/registerForm';
+
+import { Genders } from "../enums/genders";
+import { StudentYears } from "../enums/studentYears";
+import { Majors } from "../enums/majors";
+import { ShirtSizes } from "../enums/shirtSizes";
+
+
 import "react-phone-number-input/style.css";
 
-enum GenderEnum {
-    female = "Female",
-    male = "Male",
-    non_binary = "Non-binary",
-    prefer_not_to_say = "Prefer not to say",
-}
+// enum GenderEnum {
+//     female = "Female",
+//     male = "Male",
+//     non_binary = "Non-binary",
+//     prefer_not_to_say = "Prefer not to say",
+// }
 
-enum YearEnum {
-    freshman = "Freshman",
-    sophomore = "Sophomore",
-    junior = "Junior",
-    senior = "Senior",
-    fifth = "5th Year",
-    sixth = "6th Year",
-    masters = "Masters",
-    other = "Other"
-}
+// enum YearEnum {
+//     freshman = "Freshman",
+//     sophomore = "Sophomore",
+//     junior = "Junior",
+//     senior = "Senior",
+//     fifth = "5th Year",
+//     sixth = "6th Year",
+//     masters = "Masters",
+//     other = "Other"
+// }
 
-enum MajorEnum {
-    csci = "Computer Science",
-    csee = "Computer Systems Engineering",
-    ds = "Data Science",
-    fina = "Finance",
-    mist = "Management Information System",
-    ecse = "Electrical Engineering",
-    mche = "Mechanical Engineering",
-    undecided = "Undecided",
-    other = "Other",
-}
+// enum MajorEnum {
+//     csci = "Computer Science",
+//     csee = "Computer Systems Engineering",
+//     ds = "Data Science",
+//     fina = "Finance",
+//     mist = "Management Information System",
+//     ecse = "Electrical Engineering",
+//     mche = "Mechanical Engineering",
+//     undecided = "Undecided",
+//     other = "Other",
+// }
 
-enum SizeEnum {
-    small = "Small",
-    medium = "Medium",
-    large = "Large",
-    xlarge = "X-Large",
-    xxlarge = "XX-Large"
-}
+// enum SizeEnum {
+//     small = "Small",
+//     medium = "Medium",
+//     large = "Large",
+//     xlarge = "X-Large",
+//     xxlarge = "XX-Large"
+// }
 
-enum Participated {
-    yes = "YES",
-    no = "NO"
-}
+// interface Country {
+//     value: string; // country code
+//     label: string; // Full country name
+// }
 
-interface Country {
-    value: string; // country code
-    label: string; // Full country name
-}
+// interface School {
+//     value: string;
+//     label: string;
+// }
 
-interface School {
-    value: string;
-    label: string;
-}
-
-interface RegisterForm {
-    firstName: string;
-    lastName: string;
-    gender: GenderEnum;
-    age: number;
-    phoneNumber: string; // Worry about validation with '-' 
-    countryResidence: Country;
-    year: YearEnum;
-    major: MajorEnum;
-    inputMajor: string;
-    minor: string;
-    school: School;
-    inputSchool: string;
-    email: string; // .edu
-    participated: boolean; // Have you ever participated in a hackathon? Yes or No
-    hopeToSee: string; // What do you hope to see from UGA Hacks 8?
-    dietaryRestrictions: string; // Vegetarian, etc : Should give options
-    shirtSize: SizeEnum; // S, M, L, XL, XXL, should be enum
-    codeOfConduct: boolean; // MLH Code of COnduct: I have agreed , YES OR NO
-    eventLogisticsInfo: boolean; // Yes
-    mlhCommunication: boolean; // Yes
-    // excitement: Number; // Scale of 1- 100
-}
+// interface RegisterForm {
+//     firstName: string;
+//     lastName: string;
+//     gender: GenderEnum;
+//     age: number;
+//     phoneNumber: string; // Worry about validation with '-' 
+//     countryResidence: Country;
+//     year: YearEnum;
+//     major: MajorEnum;
+//     inputMajor: string;
+//     minor: string;
+//     school: School;
+//     inputSchool: string;
+//     email: string; // .edu
+//     participated: boolean; // Have you ever participated in a hackathon? Yes or No
+//     hopeToSee: string; // What do you hope to see from UGA Hacks 8?
+//     dietaryRestrictions: string; // Vegetarian, etc : Should give options
+//     shirtSize: SizeEnum; // S, M, L, XL, XXL, should be enum
+//     codeOfConduct: boolean; // MLH Code of COnduct: I have agreed , YES OR NO
+//     eventLogisticsInfo: boolean; // Yes
+//     mlhCommunication: boolean; // Yes
+//     // excitement: Number; // Scale of 1- 100
+// }
 
 export default function register() {
   const { control, resetField, watch, register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
@@ -217,8 +220,8 @@ export default function register() {
                                 <div className="flex-shrink w-full inline-block relative">
                                     <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("gender", {required: "Select gender"})} >
                                         <option value="">Select your gender</option>
-                                        {Object.keys(GenderEnum).map(key =>
-                                            <option key={key} value={key}>{GenderEnum[key as keyof typeof GenderEnum]}</option>)}
+                                        {Object.keys(Genders).map(key =>
+                                            <option key={key} value={key}>{Genders[key as keyof typeof Genders]}</option>)}
                                     </select>
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -297,8 +300,8 @@ export default function register() {
                                     </select> */}
                                     <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("year", {required: "Please select a year"})} >
                                         <option value="">Select your year</option>
-                                        {Object.keys(YearEnum).map(key =>
-                                            <option key={key} value={key}>{YearEnum[key as keyof typeof YearEnum]}</option>)}
+                                        {Object.keys(StudentYears).map(key =>
+                                            <option key={key} value={key}>{StudentYears[key as keyof typeof StudentYears]}</option>)}
                                     </select>
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
@@ -311,8 +314,8 @@ export default function register() {
                                 <div className="flex-shrink w-full inline-block relative">
                                     <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("major", {required: "Please select a major"})} >
                                         <option value="">Select your major</option>
-                                        {Object.keys(MajorEnum).map(key =>
-                                            <option key={key} value={key}>{MajorEnum[key as keyof typeof MajorEnum]}</option>)}
+                                        {Object.keys(Majors).map(key =>
+                                            <option key={key} value={key}>{Majors[key as keyof typeof Majors]}</option>)}
                                     </select>
                                     {otherMajor ? <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("inputMajor", {required: "Please enter your major", pattern: {value: /^[a-z ,.'-]+$/i, message: "Contains invalid characters"}})} type='text' maxLength={100} placeholder="Type your major here" /> : null}
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
@@ -440,8 +443,8 @@ export default function register() {
                                 <div className="flex-shrink w-full inline-block relative">
                                     <select className="block appearance-none text-gray-600 w-full bg-white border border-gray-400 shadow-inner px-4 py-2 pr-8 rounded" {...register("shirtSize", {required: "PLease select a shirt size"})} >
                                         <option value="">Select your shirt size</option>
-                                        {Object.keys(SizeEnum).map(key =>
-                                            <option key={key} value={key}>{SizeEnum[key as keyof typeof SizeEnum]}</option>)}
+                                        {Object.keys(ShirtSizes).map(key =>
+                                            <option key={key} value={key}>{ShirtSizes[key as keyof typeof ShirtSizes]}</option>)}
                                     </select>
                                     <div className="pointer-events-none absolute top-0 mt-3  right-0 flex items-center px-2 text-gray-600">
                                         <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
