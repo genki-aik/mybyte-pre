@@ -95,6 +95,11 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
       mlhCommunication: data.mlhCommunication,
       submitted_time: serverTimestamp(),
     });
+
+    // Set the user status to registered for hacks8
+    await updateDoc(doc(userRef, user.uid ? user.uid : ""), {
+      "registered.Events.hacks8": false
+    })
   }
 
   const signUp = async (first_name: string, last_name: string, email: string, password: string) => {
