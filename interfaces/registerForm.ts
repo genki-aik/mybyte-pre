@@ -1,7 +1,4 @@
-import { Genders } from "../enums/genders";
-import { StudentYears } from "../enums/studentYears";
-import { Majors } from "../enums/majors";
-import { ShirtSizes } from "../enums/shirtSizes";
+import { Genders, StudentYears, Majors, ShirtSizes } from "../enums/registerEnums"
 import { ReactSelectObject } from "../interfaces/react-select";
 
 
