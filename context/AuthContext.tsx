@@ -72,7 +72,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   }
 
   const storeUserRegistrationInformation = async (data: RegisterForm) => {
-    await setDoc(doc(db, "registration", data.firstName + ' ' + data.lastName), {
+    await setDoc(doc(db, "registration", user.uid ? user.uid : ""), {
       uid: user.uid,
       firstName: data.firstName,
       lastName: data.lastName,
