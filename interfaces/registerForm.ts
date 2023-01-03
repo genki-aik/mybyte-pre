@@ -6,7 +6,6 @@ export interface RegisterForm {
     firstName: string;
     lastName: string;
     gender: Genders;
-    age: number;
     phoneNumber: string; // Worry about validation with '-' 
     countryResidence: ReactSelectObject;
     year: StudentYears;

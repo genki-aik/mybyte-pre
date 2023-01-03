@@ -4,7 +4,7 @@ import Select from 'react-select';
 import countryList from 'react-select-country-list';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import Link from 'next/link';
-import { ErrorMessage } from '@hookform/error-message';
+import { useAuth } from '../context/AuthContext';
 
 import { RegisterForm } from '../interfaces/registerForm';
 
@@ -14,13 +14,16 @@ import { Genders, StudentYears, Majors, ShirtSizes } from "../enums/registerEnum
 import "react-phone-number-input/style.css";
 
 export default function register() {
+  const { storeUserRegistrationInformation } = useAuth();
   const { control, resetField, watch, register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     defaultValues: {
         phoneNumber: "",
+        inputMajor: "",
+        inputSchool: "",
     }
   });
 
-  const onSubmit: SubmitHandler<RegisterForm> = data => console.log(data);
+  const onSubmit: SubmitHandler<RegisterForm> = data => storeUserRegistrationInformation(data);
 
   const watchers = watch(["major", "school"]); // Watching major and school input fields in case user selects "other" option
 
@@ -34,7 +37,7 @@ export default function register() {
     {value: "stanford", label: "Stanford University"},
     {value: "other", label: "Other"},
   ]
-  
+
   const [otherMajor, setOtherMajor] = useState(false)
   const [otherSchool, setOtherSchool] = useState(false)
   const [textCount, setTextCount] = useState(0)

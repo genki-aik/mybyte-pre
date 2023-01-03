@@ -25,6 +25,8 @@ import {
 import { auth, db } from "../config/firebase";
 import { Events } from "../enums/events";
 
+import { RegisterForm } from "../interfaces/registerForm";
+
 export interface UserType {
   email: string | null;
   uid: string | null;
@@ -37,7 +39,11 @@ export const useAuth = () => useContext<any>(AuthContext);
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType>({ email: null, uid: null });
   const [loading, setLoading] = useState<boolean>(true);
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+
   const userRef = collection(db, "users");
+  const registrationRef = collection(db, "registration");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (curr_user) => {
@@ -65,9 +71,37 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     return false;
   }
 
+  const storeUserRegistrationInformation = async (data: RegisterForm) => {
+    await setDoc(doc(db, "registration", data.firstName + ' ' + data.lastName), {
+      uid: user.uid,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      phoneNumber: data.phoneNumber,
+      countryResidence: data.countryResidence.label,
+      year: data.year,
+      major: data.major,
+      inputMajor: data.inputMajor,
+      minor: data.minor,
+      school: data.school.value,
+      inputSchool: data.inputSchool,
+      email: data.email,
+      participated: data.participated,
+      hopeToSee: data.hopeToSee,
+      dietaryRestrictions: data.dietaryRestrictions,
+      shirtSize: data.shirtSize,
+      codeOfConduct: data.codeOfConduct,
+      eventLogisticsInfo: data.eventLogisticsInfo,
+      mlhCommunication: data.mlhCommunication,
+      submitted_time: serverTimestamp(),
+    });
+  }
+
   const signUp = async (first_name: string, last_name: string, email: string, password: string) => {
     try {
         const res = await createUserWithEmailAndPassword(auth, email, password);
+        setFirstName(first_name)
+        setLastName(last_name)
         const user = res.user;
         const name = first_name + " " + last_name;
         await setDoc(doc(userRef, user.uid), {
@@ -123,11 +157,12 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   const storeFirstAndLastName = async (first_name: string, last_name: string) => {
     try {
         const docRef = doc(db, "users", user.uid ? user.uid : "");
-        console.log(user);
         await updateDoc(docRef, {
             first_name: first_name,
             last_name: last_name,
         });
+        setFirstName(first_name)
+        setLastName(last_name)
     } catch (err: any) {
         console.log(err);
     }
@@ -182,7 +217,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <AuthContext.Provider value={{ user, signUp, logIn, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents }}>
+    <AuthContext.Provider value={{ user, signUp, logIn, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );
