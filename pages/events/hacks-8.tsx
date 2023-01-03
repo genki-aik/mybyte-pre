@@ -16,6 +16,7 @@ const Hacks8 = () => {
       application_type: "Participant",
       deadline: "December 31st, 2022",
       page: "/register",
+      disabled: Events.hacks8 in registeredEvents,
     }
 
     useEffect(() => {
@@ -41,7 +42,7 @@ const Hacks8 = () => {
           <h1 className="text-2xl"><b>Application Paths:</b></h1>
           <div className="flex">
           <div className="flex-1">
-            <button><RegisterCard {...application_path}/></button>
+            <button disabled={Events.hacks8 in registeredEvents}><RegisterCard {...application_path}/></button>
           </div>
           </div>
       </div>

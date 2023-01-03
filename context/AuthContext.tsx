@@ -98,7 +98,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
     // Set the user status to registered for hacks8
     await updateDoc(doc(userRef, user.uid ? user.uid : ""), {
-      "registered.Events.hacks8": false
+      "registered.HACKS8": true
     })
   }
 

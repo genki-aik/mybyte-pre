@@ -23,6 +23,7 @@ export interface ApplicationPaths {
     application_type: string,
     deadline: string,
     page: string,
+    disabled: boolean,
 }
 
 
@@ -30,29 +31,51 @@ export interface ApplicationPaths {
     const router = useRouter();
 
     function handleClick() {
-      router.push(props.page);
+      if (!props.disabled) {
+        router.push(props.page);
+      }
     }
 
     return (
       <>
         <div onClick={handleClick}>
-          <Card className="w-96">
-            <CardHeader color="blue" className="relative h-56">
-              <Image
-                src={vercelPic}
-                alt="img-blur-shadow"
-                className="h-full w-full"
-              />
-            </CardHeader>
-            <CardBody className="text-center">
-              <Typography variant="h5" className="mb-2">
-                {props.application_type}
-              </Typography>
-              <Typography>
-                Submissions close on {props.deadline}
-              </Typography>
-            </CardBody>
-          </Card>
+          {!props.disabled ? (
+            <Card className="w-96">
+              <CardHeader color="blue" className="relative h-56">
+                <Image
+                  src={vercelPic}
+                  alt="img-blur-shadow"
+                  className="h-full w-full"
+                />
+              </CardHeader>
+              <CardBody className="text-center">
+                <Typography variant="h5" className="mb-2">
+                  {props.application_type}
+                </Typography>
+                <Typography>
+                  Submissions close on {props.deadline}
+                </Typography>
+              </CardBody>
+            </Card>
+          ) : (
+            <Card className="w-96 bg-slate-300">
+              <CardHeader color="blue" className="relative h-56">
+                <Image
+                  src={vercelPic}
+                  alt="img-blur-shadow"
+                  className="h-full w-full"
+                />
+              </CardHeader>
+              <CardBody className="text-center">
+                <Typography variant="h5" className="mb-2">
+                  {props.application_type}
+                </Typography>
+                <Typography>
+                  You have already registered for this event! Thank you!
+                </Typography>
+              </CardBody>
+            </Card>
+          )}
         </div>
       </>
     );
