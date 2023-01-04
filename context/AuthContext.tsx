@@ -24,6 +24,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 import { Events } from "../enums/events";
+import { Users } from "../enums/userType";
 
 import { RegisterForm } from "../interfaces/registerForm";
 
@@ -32,12 +33,34 @@ export interface UserType {
   uid: string | null;
 }
 
+interface EventRegistered {
+  event_name: string,
+  registered: boolean | null,
+}
+
+export interface UserInfoType {
+  first_name: string | null;
+  last_name: string | null;
+  points: number;
+  registered: EventRegistered;
+  //user_type: Users | null;
+}
+
 const AuthContext = createContext({});
 
 export const useAuth = () => useContext<any>(AuthContext);
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType>({ email: null, uid: null });
+  const [userInfo, setUserInfo] = useState({
+    first_name: null,
+    last_name: null,
+    points: 0,
+    registered: {
+      "HACKS8": null
+    },
+    //user_type: null
+  })
   const [loading, setLoading] = useState<boolean>(true);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -215,6 +238,23 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
     return docSnap.data().registered;
   }
+
+  const setUserInformation = async () => {
+    const docRef = doc(db, "users", user.uid ? user.uid : "");
+    const docSnap = await getDoc(docRef);
+
+    if (!docSnap.exists()) {
+      return null;
+    }
+
+    setUserInfo({
+      first_name: docSnap.data().first_name,
+      last_name: docSnap.data().last_name,
+      points: docSnap.data().points,
+      registered: docSnap.data().registered,
+      //user_type: docSnap.data().user_type,
+    })
+  }
   
   const logOut = async () => {
     setUser({ email: null, uid: null });
@@ -222,7 +262,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <AuthContext.Provider value={{ user, signUp, logIn, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation }}>
+    <AuthContext.Provider value={{ user, userInfo, signUp, logIn, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation, setUserInformation }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );

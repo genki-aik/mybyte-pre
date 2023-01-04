@@ -1,4 +1,4 @@
-export enum UserType {
+export enum Users {
     hacker = "HACKER",
     mentor = "MENTOR",
     judge = "JUDGE",

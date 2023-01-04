@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import Select from 'react-select';
 import countryList from 'react-select-country-list';
@@ -14,7 +14,8 @@ import { Genders, StudentYears, Majors, ShirtSizes } from "../enums/registerEnum
 import "react-phone-number-input/style.css";
 
 export default function register() {
-  const { storeUserRegistrationInformation } = useAuth();
+  const { storeUserRegistrationInformation, getRegisteredEvents } = useAuth();
+  const [registeredEvents, setRegisteredEvents] = useState({});
   const { control, resetField, watch, register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     defaultValues: {
         phoneNumber: "",
@@ -22,6 +23,14 @@ export default function register() {
         inputSchool: "",
     }
   });
+
+//   useEffect(() => {
+//     async function get_registered_events() {
+//         const registered_events = await getRegisteredEvents();
+//         setRegisteredEvents(registered_events)
+//     }
+//     get_registered_events();
+//   }, []);
 
   const onSubmit: SubmitHandler<RegisterForm> = data => storeUserRegistrationInformation(data);
 
@@ -190,6 +199,11 @@ export default function register() {
                                     </div>
                                     {errors.year && <p className="text-red-400">{errors.year.message}</p>}
                                 </div>
+                            </div>
+                            <div className='w-full md:w-1/2 px-3 mb-6'>
+                                    <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >resume</label>
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("resume")} type='file' />
+                                    {errors.resume && <p className="text-red-400">{errors.resume.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
                                 <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2'>current major<span className="text-red-600">*</span></label>

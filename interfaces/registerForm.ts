@@ -21,6 +21,7 @@ export interface RegisterForm {
     shirtSize: ShirtSizes; // S, M, L, XL, XXL, should be enum
     codeOfConduct: boolean; // MLH Code of COnduct: I have agreed , YES OR NO
     eventLogisticsInfo: boolean; // Yes
-    mlhCommunication: boolean; // Yes
+    mlhCommunication: boolean;
+    resume: string;
     // excitement: Number; // Scale of 1- 100
 }

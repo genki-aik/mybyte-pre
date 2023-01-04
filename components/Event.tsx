@@ -13,6 +13,7 @@ import {EventStatus} from "../enums/eventStatus";
 
 
 export interface EventDetail {
+    key: string;
     eventName: string;
     date: string;
     description: string,
