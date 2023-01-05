@@ -82,6 +82,12 @@ export default function register() {
         resetField("inputSchool")
     }
   }
+
+  function validateFileInput(value: FileList) {
+    const fileRegex = /^.*\.(doc|docx|pdf)$/i
+
+    return fileRegex.test(value[0]?.name)
+  }
   
 //   const storage = getStorage();
 //   const file = data.resume[0]
@@ -214,9 +220,8 @@ export default function register() {
                                 </div>
                             </div>
                             <div className='w-full md:w-1/2 px-3 mb-6'>
-                                    <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >resume</label>
-                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("resume")} type='file' />
-                                    <p>{resumeUploadProgress}%</p>
+                                    <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >resume<span className="text-red-600">*</span></label>
+                                    <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("resume", {validate: (value) => validateFileInput(value) || "Please submit your resume in .pdf or .doc format"})} type='file' />
                                     {errors.resume && <p className="text-red-400">{errors.resume.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
