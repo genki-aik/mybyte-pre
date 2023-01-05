@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     if (user.uid == null) {
       router.push("/login");
     } 
-  }, [router, user]);
+  }, [user]);
   return <div className="h-screen min-h-full overflow-auto">{user ? children : null}</div>;
 };
 

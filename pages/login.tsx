@@ -24,12 +24,16 @@ const LoginPage = () => {
     if (user.uid != null) {
       router.push('/dashboard')
     }
-  });
+  }, [user]);
 
   const onSubmit = async (data: LoginType) => {
     try {
-        await logIn(data.email, data.password);
-        router.push("/dashboard");
+        const logInSuccessful = await logIn(data.email, data.password);
+        if (logInSuccessful) {
+          router.push("/dashboard");
+        } else {
+          alert("Log in unsuccessful, make sure your email is verified")
+        }
     } catch (error: any) {
         alert("Email/Password does not exist")
         console.log(error.message);

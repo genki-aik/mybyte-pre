@@ -7,6 +7,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    sendEmailVerification,
   } from "firebase/auth";
 import {
     doc,
@@ -21,13 +22,16 @@ import {
     serverTimestamp,
     limit,
     getDoc,
+    FirestoreError
 } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 import { Events } from "../enums/events";
 import { Users } from "../enums/userType";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { FirebaseError } from "firebase/app";
 
 import { RegisterForm } from "../interfaces/registerForm";
+import { useRouter } from "next/router";
 
 export interface UserType {
   email: string | null;
@@ -68,6 +72,8 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
   const userRef = collection(db, "users");
   const registrationRef = collection(db, "registration");
+
+  const router = useRouter()
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (curr_user) => {
@@ -167,13 +173,36 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             registered: {},
             added_time: serverTimestamp(),
         });
+        sendEmailVerification(user)
+
     } catch (err: any) {
+      if (err instanceof FirebaseError) {
+        console.log(err.code)
+        console.log(err.name)
+        if (err.code == "auth/email-already-in-use") {
+          alert("This email is already registered with us, please login using that email")
+          router.push('/login')
+        } else if (err.code == "auth/weak-password") {
+          // at least 6 characters long
+        }
+      }
         console.error(err);
     }
   };
 
-  const logIn = (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const logIn = async (email: string, password: string) => {
+    const res = await signInWithEmailAndPassword(auth, email, password);
+    const user = res.user;
+
+    console.log("Check for email verification")
+    if (!user.emailVerified) {
+      console.log("Not verified")
+      setUser({ uid: null, email: null})
+      signOut(auth)
+      return false
+    }
+    
+    return true
   };
 
   const logInWithGoogle = async () => {
