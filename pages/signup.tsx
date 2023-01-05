@@ -3,6 +3,7 @@ import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
+import { FirebaseError } from "firebase/app";
 
 interface SignupType {
     email: string;
@@ -28,8 +29,18 @@ const SignupPage = () => {
         try {
             await signUp(data.first_name, data.last_name, data.email, data.password);
             router.push("/emailVerification");
-        } catch (error: any) {
-            console.log(error.message);
+        } catch (err: any) {
+          if (err instanceof FirebaseError) {
+            console.log(err.code)
+            console.log(err.name)
+            if (err.code == "auth/email-already-in-use") {
+              alert("This email is already registered with us, please login using that email")
+              router.push('/login')
+            } else if (err.code == "auth/weak-password") {
+              // at least 6 characters long
+            }
+          }
+            console.log(err.message);
         }
     };
 

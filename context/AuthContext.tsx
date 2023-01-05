@@ -174,8 +174,11 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
             added_time: serverTimestamp(),
         });
         sendEmailVerification(user)
+        signOut(auth)
 
     } catch (err: any) {
+      throw err;
+      
       if (err instanceof FirebaseError) {
         console.log(err.code)
         console.log(err.name)
