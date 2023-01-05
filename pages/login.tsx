@@ -3,6 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Link from "next/link";
 
 interface LoginType {
   email: string;
@@ -127,6 +128,9 @@ const LoginPage = () => {
             </div>
           </form>
         </FormProvider>
+        <div>
+          <p><Link href="/resetPassword">Forgot Password</Link></p>
+        </div>
       </div>
     </ProtectedRoute>
   );

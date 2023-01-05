@@ -8,6 +8,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
     sendEmailVerification,
+    sendPasswordResetEmail,
   } from "firebase/auth";
 import {
     doc,
@@ -208,6 +209,10 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     return true
   };
 
+  const resetPassword = async (email: string) => {
+    await sendPasswordResetEmail(auth, email)
+  }
+
   const logInWithGoogle = async () => {
     try {
         const res = await signInWithPopup(auth, googleProvider);
@@ -319,7 +324,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <AuthContext.Provider value={{ user, userInfo, signUp, logIn, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation, setUserInformation }}>
+    <AuthContext.Provider value={{ user, userInfo, signUp, logIn, resetPassword, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation, setUserInformation }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );
