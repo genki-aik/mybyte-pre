@@ -8,14 +8,13 @@ import { EventStatus } from "../../enums/eventStatus";
 
 
 const Hacks8 = () => {
-    //disabled={Events.hacks8 in userInfo.registered}
     const { user, userInfo, getFirstName, getRegisteredEvents } = useAuth();
 
     const application_path: ApplicationPaths = {
       application_type: "Participant",
       deadline: "December 31st, 2022",
       page: "/register",
-      disabled: false,
+      disabled: Events.hacks8 in userInfo.registered,
     }
 
     // useEffect(() => {
@@ -41,7 +40,7 @@ const Hacks8 = () => {
           <h1 className="text-2xl"><b>Application Paths:</b></h1>
           <div className="flex">
           <div className="flex-1">
-            <button ><RegisterCard {...application_path}/></button>
+            <button disabled={Events.hacks8 in userInfo.registered}><RegisterCard {...application_path}/></button>
           </div>
           </div>
       </div>
