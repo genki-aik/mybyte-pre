@@ -25,6 +25,7 @@ import {
 import { auth, db } from "../config/firebase";
 import { Events } from "../enums/events";
 import { Users } from "../enums/userType";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 import { RegisterForm } from "../interfaces/registerForm";
 
@@ -34,8 +35,7 @@ export interface UserType {
 }
 
 interface EventRegistered {
-  event_name: string,
-  registered: boolean | null,
+  HACKS8: boolean | null;
 }
 
 export interface UserInfoType {
@@ -52,7 +52,7 @@ export const useAuth = () => useContext<any>(AuthContext);
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType>({ email: null, uid: null });
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo, setUserInfo] = useState<UserInfoType>({
     first_name: null,
     last_name: null,
     points: 0,
@@ -64,6 +64,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState<boolean>(true);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
+  const [resumeLink, setResumeLink] = useState<string>("");
 
   const userRef = collection(db, "users");
   const registrationRef = collection(db, "registration");
@@ -75,6 +76,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
           email: curr_user.email,
           uid: curr_user.uid,
         });
+        setUserInformation(curr_user.uid);
       } else {
         setUser({ email: null, uid: null });
       }
@@ -95,34 +97,56 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   }
 
   const storeUserRegistrationInformation = async (data: RegisterForm) => {
-    await setDoc(doc(db, "registration", user.uid ? user.uid : ""), {
-      uid: user.uid,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      gender: data.gender,
-      phoneNumber: data.phoneNumber,
-      countryResidence: data.countryResidence.label,
-      year: data.year,
-      major: data.major,
-      inputMajor: data.inputMajor,
-      minor: data.minor,
-      school: data.school.value,
-      inputSchool: data.inputSchool,
-      email: data.email,
-      participated: data.participated,
-      hopeToSee: data.hopeToSee,
-      dietaryRestrictions: data.dietaryRestrictions,
-      shirtSize: data.shirtSize,
-      codeOfConduct: data.codeOfConduct,
-      eventLogisticsInfo: data.eventLogisticsInfo,
-      mlhCommunication: data.mlhCommunication,
-      submitted_time: serverTimestamp(),
-    });
+    const storage = getStorage();
+    const file = data.resume[0]
+    console.log(file.name)
+    const storageRef = ref(storage, 'resume/' + user.uid + '/' + file.name)
 
+    const uploadTask = uploadBytesResumable(storageRef, file)
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        console.log("upload in progress")
+      },
+      (error) => {
+        console.log("Error uploading resume")
+        alert(error)
+      },
+      async () => {
+        await getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setDoc(doc(db, "registration", user.uid ? user.uid : ""), {
+            uid: user.uid,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            gender: data.gender,
+            phoneNumber: data.phoneNumber,
+            countryResidence: data.countryResidence.label,
+            year: data.year,
+            major: data.major,
+            inputMajor: data.inputMajor,
+            minor: data.minor,
+            school: data.school.value,
+            inputSchool: data.inputSchool,
+            email: data.email,
+            participated: data.participated,
+            hopeToSee: data.hopeToSee,
+            dietaryRestrictions: data.dietaryRestrictions,
+            shirtSize: data.shirtSize,
+            codeOfConduct: data.codeOfConduct,
+            eventLogisticsInfo: data.eventLogisticsInfo,
+            mlhCommunication: data.mlhCommunication,
+            resumeLink: downloadURL,
+            submitted_time: serverTimestamp(),
+          });
+        })
+      }
+    )
+          
     // Set the user status to registered for hacks8
     await updateDoc(doc(userRef, user.uid ? user.uid : ""), {
       "registered.HACKS8": true
     })
+
   }
 
   const signUp = async (first_name: string, last_name: string, email: string, password: string) => {
@@ -239,8 +263,9 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     return docSnap.data().registered;
   }
 
-  const setUserInformation = async () => {
-    const docRef = doc(db, "users", user.uid ? user.uid : "");
+  const setUserInformation = async (uid: string | null) => {
+    console.log("Setting user information");
+    const docRef = doc(db, "users", uid ? uid : "");
     const docSnap = await getDoc(docRef);
 
     if (!docSnap.exists()) {

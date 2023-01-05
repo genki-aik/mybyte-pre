@@ -22,6 +22,7 @@ export interface RegisterForm {
     codeOfConduct: boolean; // MLH Code of COnduct: I have agreed , YES OR NO
     eventLogisticsInfo: boolean; // Yes
     mlhCommunication: boolean;
-    resume: string;
+    resume: FileList;
+    resumeLink: string;
     // excitement: Number; // Scale of 1- 100
 }

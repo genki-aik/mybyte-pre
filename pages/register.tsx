@@ -5,16 +5,20 @@ import countryList from 'react-select-country-list';
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
+import { Events } from '../enums/events';
+import { useRouter } from 'next/router';
 
 import { RegisterForm } from '../interfaces/registerForm';
 
 import { Genders, StudentYears, Majors, ShirtSizes } from "../enums/registerEnums"
 
-
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import "react-phone-number-input/style.css";
+import ProtectedRoute from '../components/ProtectedRoute';
 
 export default function register() {
-  const { storeUserRegistrationInformation, getRegisteredEvents } = useAuth();
+  const router = useRouter();
+  const { storeUserRegistrationInformation, getRegisteredEvents, userInfo } = useAuth();
   const [registeredEvents, setRegisteredEvents] = useState({});
   const { control, resetField, watch, register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
     defaultValues: {
@@ -25,14 +29,14 @@ export default function register() {
   });
 
 //   useEffect(() => {
-//     async function get_registered_events() {
-//         const registered_events = await getRegisteredEvents();
-//         setRegisteredEvents(registered_events)
+//     if (Events.hacks8 in userInfo.registered) {
+//         console.log("REGISTERED")
+//         router.push("/dashboard");
 //     }
-//     get_registered_events();
 //   }, []);
 
   const onSubmit: SubmitHandler<RegisterForm> = data => storeUserRegistrationInformation(data);
+  //const onSubmit: SubmitHandler<RegisterForm> = data => console.log(data);
 
   const watchers = watch(["major", "school"]); // Watching major and school input fields in case user selects "other" option
 
@@ -49,6 +53,7 @@ export default function register() {
 
   const [otherMajor, setOtherMajor] = useState(false)
   const [otherSchool, setOtherSchool] = useState(false)
+  const [resumeUploadProgress, setResumeUploadProgress] = useState()
   const [textCount, setTextCount] = useState(0)
 
   register("major", {
@@ -77,9 +82,17 @@ export default function register() {
         resetField("inputSchool")
     }
   }
+  
+//   const storage = getStorage();
+//   const file = data.resume[0]
+//   const storageRef = ref(storage, 'resume/' + user.uid + '/' + file.name)
+
+//   const uploadTask = uploadBytesResumable(storageRef, file)
+
+  
 
   return (
-    <>
+    <ProtectedRoute>
         <div className="min-h-screen pt-2 font-mono my-16">
         <div className="container mx-auto">
             <div className="inputs w-full max-w-2xl p-6 mx-auto">
@@ -203,6 +216,7 @@ export default function register() {
                             <div className='w-full md:w-1/2 px-3 mb-6'>
                                     <label className='block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2' >resume</label>
                                     <input className='appearance-none block w-full bg-white text-gray-700 border border-gray-400 shadow-inner rounded-md py-3 px-4 leading-tight focus:outline-none  focus:border-gray-500' {...register("resume")} type='file' />
+                                    <p>{resumeUploadProgress}%</p>
                                     {errors.resume && <p className="text-red-400">{errors.resume.message}</p>}
                             </div>
                             <div className='w-full md:w-full px-3 mb-6'>
@@ -383,6 +397,6 @@ export default function register() {
             </div>
         </div>
     </div>
-    </>
+    </ProtectedRoute>
   )
 }

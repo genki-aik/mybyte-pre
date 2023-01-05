@@ -20,14 +20,14 @@ const DashboardPage = () => {
 
 
 
-    useEffect(() => {
-      async function get_user_information() {
-        await setUserInformation();
-        //setFirstName(userInfo.first_name)
-      }
+    // useEffect(() => {
+    //   async function get_user_information() {
+    //     await setUserInformation();
+    //     //setFirstName(userInfo.first_name)
+    //   }
 
-      get_user_information();
-    }, []);
+    //   get_user_information();
+    // }, []);
 
   return (
     <ProtectedRoute>

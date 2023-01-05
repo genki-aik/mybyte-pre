@@ -4,10 +4,11 @@ import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, userInfo } = useAuth();
 
   useEffect(() => {
-    if (!user.uid) {
+    console.log(user.uid)
+    if (user.uid == null) {
       router.push("/login");
     } 
   }, [router, user]);

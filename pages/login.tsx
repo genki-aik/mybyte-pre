@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
@@ -9,7 +9,7 @@ interface LoginType {
   password: string;
 }
 const LoginPage = () => {
-    const { logIn, logInWithGoogle, hasFirstAndLastName } = useAuth();
+    const { logIn, logInWithGoogle, hasFirstAndLastName, user } = useAuth();
     const router = useRouter();
 
   const methods = useForm<LoginType>({ mode: "onBlur" });
@@ -19,6 +19,12 @@ const LoginPage = () => {
     handleSubmit,
     formState: { errors },
   } = methods;
+
+  useEffect(() => {
+    if (user.uid != null) {
+      router.push('/dashboard')
+    }
+  });
 
   const onSubmit = async (data: LoginType) => {
     try {
@@ -42,7 +48,7 @@ const LoginPage = () => {
 
   return (
     <ProtectedRoute>
-      <div className="sign-up-form container mx-auto w-96 mt-12 border-2 border-gray-400">
+      <div className="sign-up-form container mx-auto w-96 mt-12 border-2 border-gray-400 overflow-auto">
         <h2 className="px-12 mt-8 text-center text-2xl font-semibold text-blue-900">Log In</h2>
         <FormProvider {...methods}>
           <form action="" className="w-80 mx-auto pb-12 px-4" onSubmit={handleSubmit(onSubmit)}>

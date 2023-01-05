@@ -10,7 +10,7 @@ interface RegisterNameType {
 }
 
 const RegisterNamePage = () => {
-    const { user, storeFirstAndLastName, hasFirstAndLastName } = useAuth();
+    const { user, userInfo, storeFirstAndLastName, hasFirstAndLastName, setUserInformation } = useAuth();
     const [hasName, setHasName] = useState(false);
     const router = useRouter();
 
@@ -23,17 +23,28 @@ const RegisterNamePage = () => {
     } = methods;
 
     useEffect(() => {
-      (async () => {
-        const name = await hasFirstAndLastName();
-        console.log("INSIDE USE EFFECT NAME");
-        setHasName(name);
-      })();
-      console.log(hasName);
-      if (hasName) {
-        console.log("ENTERED GET NAME IF STATEMENT");
-        router.push("/dashboard");
+      // async function get_user_information() {
+      //   await setUserInformation();
+      //   //setFirstName(userInfo.first_name)
+      // }
+
+      // get_user_information();
+
+      if (userInfo.first_name !== "") {
+        router.push("/dashboard")
       }
-    })
+
+      // (async () => {
+      //   const name = await hasFirstAndLastName();
+      //   console.log("INSIDE USE EFFECT NAME");
+      //   setHasName(name);
+      // })();
+      // console.log(hasName);
+      // if (hasName) {
+      //   console.log("ENTERED GET NAME IF STATEMENT");
+      //   router.push("/dashboard");
+      // }
+    }, [])
 
     const onSubmit = async (data: RegisterNameType) => {
         try {
