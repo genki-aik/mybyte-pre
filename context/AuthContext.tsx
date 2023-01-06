@@ -70,6 +70,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
   const [resumeLink, setResumeLink] = useState<string>("");
+  const [currEvent, setCurrEvent] = useState<Events>();
 
   const userRef = collection(db, "users");
   const registrationRef = collection(db, "registration");
@@ -324,7 +325,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   };
 
   return (
-    <AuthContext.Provider value={{ user, userInfo, signUp, logIn, resetPassword, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation, setUserInformation }}>
+    <AuthContext.Provider value={{ user, userInfo, signUp, logIn, resetPassword, logInWithGoogle, logOut, storeFirstAndLastName, hasFirstAndLastName, validUser, getFirstName, getRegisteredEvents, storeUserRegistrationInformation, setUserInformation, currEvent, setCurrEvent }}>
       {loading ? null : children}
     </AuthContext.Provider>
   );

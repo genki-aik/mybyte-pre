@@ -8,7 +8,7 @@ import { EventStatus } from "../../enums/eventStatus";
 
 
 const Hacks8 = () => {
-    const { user, userInfo, getFirstName, getRegisteredEvents } = useAuth();
+    const { user, userInfo, getFirstName, getRegisteredEvents, setCurrEvent } = useAuth();
 
     const application_path: ApplicationPaths = {
       application_type: "Participant",
@@ -16,6 +16,10 @@ const Hacks8 = () => {
       page: "/register",
       disabled: Events.hacks8 in userInfo.registered,
     }
+
+    useEffect(() => {
+      setCurrEvent(Events.hacks8)
+    }, [])
 
     // useEffect(() => {
     //   async function get_first_name() {
@@ -34,7 +38,7 @@ const Hacks8 = () => {
     <ProtectedRoute>
       <div className="py-2 container mx-auto">
         <div className="text-gray-600 px-12 py-24 mt-24 mx-auto">
-          <h2 className="text-2xl font-semibold">Hey {userInfo.first_name}, this is </h2>
+          <h2 className="text-2xl font-semibold">Hey {userInfo.first_name}, this is UGA Hacks 8 Registration Page</h2>
           STATUS: {Events.hacks8 in userInfo.registered ? EventStatus.Registered : EventStatus.NotRegistered}
           </div>
           <h1 className="text-2xl"><b>Application Paths:</b></h1>

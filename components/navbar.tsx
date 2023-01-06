@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "../context/AuthContext";
+import { Events } from "../enums/events";
 
 const Navbar = ({ children }: { children: React.ReactNode }) => {
-  const { user, logOut } = useAuth();
+  const { user, logOut, currEvent } = useAuth();
   const router = useRouter();
 
   const menuItems = [
@@ -39,7 +40,7 @@ const Navbar = ({ children }: { children: React.ReactNode }) => {
         <div className="flex items-center text-blue-900 hover:text-blue-800 cursor-pointer transition duration-150 ">
           <Link href="/">
             <span className="font-semibold text-lg font-sans">
-              Firebase Authentication with Next.js
+              MyByte - UGA Hacks's Portal
             </span>
           </Link>
         </div>

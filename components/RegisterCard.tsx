@@ -8,6 +8,8 @@ import {
 import {EventStatus} from "../enums/eventStatus";
 import { useRouter } from "next/router";
 import vercelPic from "../public/vercel.svg";
+import hacks8Byte from "../public/byte_mini.png"
+import hacks8Banner from "../public/byte_banner.png"
 import Image from "next/image";
 
 
@@ -43,7 +45,7 @@ export interface ApplicationPaths {
             <Card className="w-96">
               <CardHeader color="blue" className="relative h-56">
                 <Image
-                  src={vercelPic}
+                  src={hacks8Byte}
                   alt="img-blur-shadow"
                   className="h-full w-full"
                 />
@@ -61,7 +63,7 @@ export interface ApplicationPaths {
             <Card className="w-96 bg-slate-300">
               <CardHeader color="blue" className="relative h-56">
                 <Image
-                  src={vercelPic}
+                  src={hacks8Byte}
                   alt="img-blur-shadow"
                   className="h-full w-full"
                 />

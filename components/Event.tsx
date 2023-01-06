@@ -10,6 +10,7 @@ import {
     Typography,
 } from "@material-tailwind/react";
 import {EventStatus} from "../enums/eventStatus";
+import hacks8Byte from "../public/byte_mini.png"
 
 
 export interface EventDetail {
@@ -32,7 +33,7 @@ export default function Event(props: EventDetail) {
         <Card className="w-96">
           <CardHeader color="blue" className="relative h-56">
                 <Image
-                    src={vercelPic}
+                    src={hacks8Byte}
                     alt="img-blur-shadow"
                     className="h-full w-full"
                 />
